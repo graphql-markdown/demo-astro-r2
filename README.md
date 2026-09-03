@@ -39,7 +39,7 @@ the whole demo runs with no Cloudflare account.
 │   │   └── PageTitle.astro        # adds breadcrumbs above the title
 │   └── styles/custom.css          # theme tweaks (Starlight `customCss`)
 ├── public/favicon.svg             # the project mark
-├── astro.config.mjs
+├── astro.config.ts
 ├── graphql.config.mjs             # wires the adapter into GraphQL-Markdown
 ├── scripts/
 │   ├── generate-docs.mjs          # runs the generator, then releases the binding
