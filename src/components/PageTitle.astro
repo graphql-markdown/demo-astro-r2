@@ -1,0 +1,38 @@
+---
+/**
+ * Starlight's page title, preceded by breadcrumbs.
+ *
+ * `astro-breadcrumbs` derives the trail from `Astro.url.pathname`, which maps
+ * one-to-one onto the object keys in the bucket, so nothing has to be threaded
+ * through from the content loader.
+ */
+import Default from "@astrojs/starlight/components/PageTitle.astro";
+import { Breadcrumbs } from "astro-breadcrumbs";
+
+import "astro-breadcrumbs/breadcrumbs.css";
+
+// The intermediate segments are groupings, not pages: `/types/objects/user`
+// exists but `/types/objects` does not. Drop their hrefs so the trail still
+// shows the hierarchy without offering links that 404. The first crumb (the
+// homepage) and the current page are real routes and keep theirs.
+//
+// The BreadcrumbList JSON-LD goes with them: it builds absolute URLs from every
+// crumb's href, so it both breaks on a crumb without one and would otherwise
+// publish structured data pointing at pages that do not exist.
+const depth = Astro.url.pathname.split("/").filter(Boolean).length;
+const customizeLinks = Array.from({ length: Math.max(depth - 1, 0) }, (_, i) => ({
+  index: i + 1,
+  href: undefined,
+}));
+---
+
+<Breadcrumbs
+  indexText="Schema"
+  linkTextFormat="capitalized"
+  customizeLinks={customizeLinks}
+  schemaJsonScript={false}
+>
+  <span slot="separator" aria-hidden="true">/</span>
+</Breadcrumbs>
+
+<Default><slot /></Default>
