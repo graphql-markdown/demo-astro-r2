@@ -12,6 +12,8 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
+import { platformProxyOptions } from "../src/lib/platform-proxy.mjs";
+
 // `baseURL` is ".", so pages sit at the root of the bucket.
 const PREFIX = "";
 const minimum = Number(process.argv[2] ?? 200);
@@ -20,11 +22,9 @@ const minimum = Number(process.argv[2] ?? 200);
 // the same bucket wherever it is run from.
 const projectDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const { env, dispose } = await getPlatformProxy({
-  configPath: path.join(projectDir, "wrangler.jsonc"),
-  persist: { path: path.join(projectDir, ".wrangler", "state", "v3") },
-  environment: process.env.WRANGLER_ENV,
-});
+const { env, dispose } = await getPlatformProxy(
+  platformProxyOptions(projectDir),
+);
 
 const keys = [];
 let cursor;

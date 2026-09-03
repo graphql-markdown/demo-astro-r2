@@ -6,6 +6,8 @@ import type { AstroConfig } from "astro";
 import type { Loader } from "astro/loaders";
 import { getPlatformProxy } from "wrangler";
 
+import { platformProxyOptions } from "./platform-proxy.mjs";
+
 /**
  * Pages fetched from R2 are staged here so Astro's MDX pipeline can compile
  * them. The Starlight formatter emits MDX — `<Badge>` and `<Aside>` imported
@@ -89,17 +91,9 @@ export const r2DocsLoader = (): Loader => ({
     logger,
   }) {
     const collection = collectionPaths(config);
-    const { env, dispose } = await getPlatformProxy<Env>({
-      // Both anchored to the project root: `getPlatformProxy()` otherwise
-      // searches upwards from `process.cwd()` for the config and reads the
-      // local state from a `.wrangler` beside it, so a build started from
-      // elsewhere gets no `DOCS` binding, or an empty one.
-      configPath: fileURLToPath(new URL("wrangler.jsonc", config.root)),
-      persist: {
-        path: fileURLToPath(new URL(".wrangler/state/v3", config.root)),
-      },
-      environment: process.env.WRANGLER_ENV,
-    });
+    const { env, dispose } = await getPlatformProxy<Env>(
+      platformProxyOptions(config.root),
+    );
 
     try {
       store.clear();

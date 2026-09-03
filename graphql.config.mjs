@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
+import { platformProxyOptions } from "./src/lib/platform-proxy.mjs";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.mjs";
 
 // Paths are anchored to this file rather than left relative, so a run from
@@ -21,14 +22,11 @@ const baseURL = ".";
 // WRANGLER_ENV that is the local .wrangler state, so generation runs offline;
 // WRANGLER_ENV=remote selects the wrangler.jsonc environment whose binding is
 // marked `"remote": true` and writes to the real bucket instead.
-const { env, dispose } = await getPlatformProxy({
-  // Anchored like the paths above: left to their defaults, the config file is
-  // looked up from `process.cwd()` and the local state read from a `.wrangler`
-  // beside it, so a run from elsewhere gets no `DOCS` binding, or an empty one.
-  configPath: path.join(configDir, "wrangler.jsonc"),
-  persist: { path: path.join(configDir, ".wrangler", "state", "v3") },
-  environment: process.env.WRANGLER_ENV,
-});
+const { env, dispose } = await getPlatformProxy(
+  // Anchored like the paths above, for the reasons `platformProxyOptions()`
+  // spells out.
+  platformProxyOptions(configDir),
+);
 
 // Miniflare keeps a workerd process alive behind the binding, so generation has
 // to release it explicitly — `scripts/generate-docs.mjs` calls this when the
