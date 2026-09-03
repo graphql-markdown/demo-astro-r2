@@ -18,15 +18,15 @@
     "doc:verify": "node scripts/verify-docs.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.6",
+    "@astrojs/cloudflare": "^14.3.0",
     "@astrojs/starlight": "^0.41.11",
     "@catppuccin/starlight": "^2.1.0",
     "@graphql-markdown/cli": "^1.0.2",
     "@graphql-markdown/core": "^1.21.2",
     "@graphql-markdown/diff": "^1.1.17",
     "@graphql-markdown/formatters": "^1.0.2",
-    "@graphql-tools/url-loader": "^8.0.0",
-    "astro": "^7.2.0",
+    "@graphql-tools/url-loader": "^9.1.7",
+    "astro": "^7.3.1",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.4"
   },
