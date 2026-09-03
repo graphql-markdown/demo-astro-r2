@@ -11,8 +11,10 @@ run-name: "Regenerate documentation by @${{ github.actor }}"
 on:
   workflow_dispatch:
 
+# Shared with deploy.yml, so a push to `main` cannot build and deploy from the
+# bucket while `--force` has it half-written. See that workflow.
 concurrency:
-  group: publish-docs
+  group: r2-bucket
   cancel-in-progress: false
 
 jobs:

@@ -10,9 +10,13 @@ on:
   push:
     branches: [main]
 
+# Shared with docs.yml: that workflow empties the bucket before rewriting it,
+# and this one builds from whatever the bucket holds, so the two must not
+# overlap. Nothing is cancelled — a cancelled docs run leaves the bucket
+# half-written, so runs queue instead.
 concurrency:
-  group: deploy
-  cancel-in-progress: true
+  group: r2-bucket
+  cancel-in-progress: false
 
 jobs:
   deploy:
