@@ -1,0 +1,14 @@
+---
+id: schema
+title: Schema Documentation
+---
+
+Every page in this site was generated from the
+[AniList](https://anilist.co/) GraphQL schema by
+[GraphQL-Markdown](https://graphql-markdown.dev/) and written straight to a
+Cloudflare R2 bucket through an [output
+adapter](https://graphql-markdown.dev/docs/advanced/output-adapter) — nothing
+was written to disk, and nothing was baked into this Worker's build output.
+
+The Worker reads each page back out of the bucket when you request it, so
+regenerating the documentation takes effect without a redeploy.
