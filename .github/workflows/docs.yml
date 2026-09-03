@@ -1,0 +1,82 @@
+name: Publish documentation
+
+run-name: "Regenerate documentation by @${{ github.actor }}"
+
+# Regenerates the documentation in R2 and then redeploys, because the content
+# loader reads the bucket at build time: the pages are baked into the Worker's
+# output, so a regeneration only reaches the site through a deploy.
+#
+# CLOUDFLARE_R2_API_TOKEN should be scoped to write on this one bucket only —
+# a narrower token than the one the deploy step uses.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: publish-docs
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Generate into R2 and redeploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Selects the wrangler.jsonc environment whose DOCS binding is remote,
+      # so generation writes to the real bucket rather than local state.
+      WRANGLER_ENV: remote
+    steps:
+      - uses: actions/checkout@v7
+
+      # TEMPORARY: see ci.yml. Remove once `outputAdapter` ships to npm.
+      - name: Checkout graphql-markdown
+        uses: actions/checkout@v7
+        with:
+          repository: graphql-markdown/graphql-markdown
+          path: .graphql-markdown
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Build graphql-markdown
+        run: bun install --frozen-lockfile && bun run build
+        working-directory: .graphql-markdown
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Use the local graphql-markdown build
+        run: npm run link:local
+        env:
+          GRAPHQL_MARKDOWN_REPO: .graphql-markdown
+
+      # `--force` clears the prefix before writing, so a run that dies halfway
+      # leaves the bucket partial. The verification step below is what turns
+      # that into a failed run rather than a quietly broken site; if you cannot
+      # tolerate the window at all, generate into a versioned prefix and swap.
+      - name: Generate documentation
+        run: npm run doc:force
+
+      # `gqlmd` exits 0 even when a formatter hook failed, so check what
+      # actually landed in the bucket rather than trusting the exit status.
+      - name: Verify the generated documentation
+        run: npm run doc:verify
+
+      # Reads the bucket through the content loader in src/content.config.ts.
+      - name: Build
+        run: npm run build
+        env:
+          WRANGLER_ENV: remote
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
