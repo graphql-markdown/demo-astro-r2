@@ -13,13 +13,13 @@ import path from "node:path";
 /**
  * Builds the adapter for a bucket.
  *
- * @param bucket - An R2 binding (`R2Bucket`), local or remote.
+ * @param bucket - An R2 binding, local or remote.
  * @param rootPath - The `rootPath` setting, used to turn paths into keys. Pass
  *   it absolute, as `graphql.config.ts` does, so the keys do not depend on the
  *   working directory the generator was started from.
  * @returns An object with `writeFile`, `readFile` and `ensureDir`.
  */
-export const r2OutputAdapter = (bucket, rootPath) => {
+export const r2OutputAdapter = (bucket: R2Bucket, rootPath: string) => {
   /**
    * Keys are the generated paths relative to `rootPath`, always forward-slashed
    * so the same schema produces the same keys whichever OS generated them.
@@ -28,14 +28,14 @@ export const r2OutputAdapter = (bucket, rootPath) => {
    * layout intact for the one file that sits outside it — mdBook's
    * `SUMMARY.md` — which would otherwise pick up a leading `..`.
    */
-  const toKey = (location) =>
+  const toKey = (location: string) =>
     path
       .relative(path.resolve(rootPath), path.resolve(location))
       .split(path.sep)
       .join("/");
 
   return {
-    writeFile: async (filePath, content) => {
+    writeFile: async (filePath: string, content: string) => {
       await bucket.put(toKey(filePath), content, {
         httpMetadata: { contentType: "text/markdown; charset=utf-8" },
       });
@@ -46,7 +46,7 @@ export const r2OutputAdapter = (bucket, rootPath) => {
      * back; an absent object means "there is nothing here", which is a normal
      * answer rather than a failure.
      */
-    readFile: async (filePath) => {
+    readFile: async (filePath: string) => {
       const object = await bucket.get(toKey(filePath));
 
       return object ? await object.text() : undefined;
@@ -57,7 +57,7 @@ export const r2OutputAdapter = (bucket, rootPath) => {
      * honouring `forceEmpty`, which is what `--force` acts on: without it,
      * pages for types deleted from the schema would stay in the bucket forever.
      */
-    ensureDir: async (dirPath, options) => {
+    ensureDir: async (dirPath: string, options?: { forceEmpty?: boolean }) => {
       if (options?.forceEmpty !== true) {
         return;
       }
@@ -68,7 +68,7 @@ export const r2OutputAdapter = (bucket, rootPath) => {
       // whole bucket — which is why it gets a bucket of its own.
       const dirKey = toKey(dirPath);
       const prefix = dirKey === "" ? "" : `${dirKey}/`;
-      let cursor;
+      let cursor: string | undefined;
 
       do {
         const listed = await bucket.list({ prefix, cursor });

@@ -30,9 +30,9 @@ the whole demo runs with no Cloudflare account.
 ├── src/
 │   ├── content.config.ts          # points Starlight's docs collection at R2
 │   ├── lib/
-│   │   ├── r2-output-adapter.mjs  # ← the output adapter (generation)
+│   │   ├── r2-output-adapter.ts   # ← the output adapter (generation)
 │   │   ├── r2-docs-loader.ts      # ← the content loader (build)
-│   │   └── formatter.mjs          # the Starlight preset, with overrides
+│   │   └── formatter.ts           # the Starlight preset, with overrides
 │   ├── assets/                    # the project mark, light and dark variants
 │   ├── components/
 │   │   ├── Footer.astro           # Starlight's footer, crediting GraphQL-Markdown
@@ -97,7 +97,7 @@ extended by re-exporting it and replacing the parts you want.
 The Starlight preset already renders badges and admonitions as Starlight's own
 `<Badge>` and `<Aside>` components. What it inherits from the shared defaults is
 generic HTML carrying `gqlmd-mdx-*` classes, which only looks right if the site
-ships CSS for those classes. `src/lib/formatter.mjs` overrides those to emit
+ships CSS for those classes. `src/lib/formatter.ts` overrides those to emit
 elements Starlight already styles, so the markup needs no CSS to compensate —
 what the generated content looks like is decided by the formatter, not patched
 afterwards. (`src/styles/custom.css` is for theme tweaks that belong to the

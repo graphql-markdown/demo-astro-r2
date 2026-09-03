@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { getPlatformProxy } from "wrangler";
 
 import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
-import { r2OutputAdapter } from "./src/lib/r2-output-adapter.mjs";
+import { r2OutputAdapter } from "./src/lib/r2-output-adapter.ts";
 
 // Paths are anchored to this file rather than left relative, so a run from
 // another working directory generates the same keys instead of quietly
@@ -22,7 +22,7 @@ const baseURL = ".";
 // WRANGLER_ENV that is the local .wrangler state, so generation runs offline;
 // WRANGLER_ENV=remote selects the wrangler.jsonc environment whose binding is
 // marked `"remote": true` and writes to the real bucket instead.
-const { env, dispose } = await getPlatformProxy(
+const { env, dispose } = await getPlatformProxy<Env>(
   // Anchored like the paths above, for the reasons `platformProxyOptions()`
   // spells out.
   platformProxyOptions(configDir),
@@ -48,8 +48,8 @@ export default {
           options: { method: "POST" },
         },
       },
-      // The Starlight preset with one override; see src/lib/formatter.mjs.
-      formatter: new URL("./src/lib/formatter.mjs", import.meta.url).href,
+      // The Starlight preset with one override; see src/lib/formatter.ts.
+      formatter: new URL("./src/lib/formatter.ts", import.meta.url).href,
       docOptions: {
         sectionHeaderId: false,
       },

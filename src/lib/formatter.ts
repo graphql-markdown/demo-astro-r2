@@ -14,22 +14,45 @@ export * from "@graphql-markdown/formatters/starlight";
 
 import { createMDXFormatter as createStarlightFormatter } from "@graphql-markdown/formatters/starlight";
 
+/**
+ * The contract each override has to satisfy, taken from the preset being
+ * extended rather than from `@graphql-markdown/types`, which this project does
+ * not depend on directly.
+ */
+type StarlightFormatter = ReturnType<typeof createStarlightFormatter>;
+
+/**
+ * The renderer brands formatter output as an opaque `MDXString`. Template
+ * literals produce a plain `string`, so each override asserts the brand on the
+ * way out; the parameter types are still checked against the contract.
+ */
+type MDXString = ReturnType<StarlightFormatter["formatMDXBullet"]>;
+
 /** ` · ` instead of the default ` ● `, as text rather than a styled span. */
-export const formatMDXBullet = (text = "") => `&nbsp;·&nbsp;${text}`;
+export const formatMDXBullet: StarlightFormatter["formatMDXBullet"] = (
+  text = "",
+) => `&nbsp;·&nbsp;${text}` as MDXString;
 
 /** `Parent.field` as inline code, which Starlight styles. */
-export const formatMDXNameEntity = (name, parentType) =>
-  `<code>${parentType ? `${parentType}.` : ""}${name}</code>`;
+export const formatMDXNameEntity: StarlightFormatter["formatMDXNameEntity"] = (
+  name,
+  parentType,
+) => `<code>${parentType ? `${parentType}.` : ""}${name}</code>` as MDXString;
 
 /** A plain `<details>`, which Starlight styles inside Markdown content. */
-export const formatMDXDetails = ({ dataOpen, dataClose }) =>
-  `\n\n<details>\n<summary>${dataOpen}</summary>\n\n\r\n\n<em>${dataClose}</em>\n</details>\n\n`;
+export const formatMDXDetails: StarlightFormatter["formatMDXDetails"] = ({
+  dataOpen,
+  dataClose,
+}) =>
+  `\n\n<details>\n<summary>${dataOpen}</summary>\n\n\r\n\n<em>${dataClose}</em>\n</details>\n\n` as MDXString;
 
 /**
  * `createMDXFormatter` takes precedence over individually exported functions,
  * so the overrides have to go through it as well as being exported above.
  */
-export const createMDXFormatter = (meta) => ({
+export const createMDXFormatter = (
+  meta?: Parameters<typeof createStarlightFormatter>[0],
+): StarlightFormatter => ({
   ...createStarlightFormatter(meta),
   formatMDXBullet,
   formatMDXNameEntity,
