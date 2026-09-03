@@ -20,15 +20,26 @@ import { getPlatformProxy } from "wrangler";
  *
  * The directory is a build artefact: gitignored, and rewritten from the bucket
  * on every load.
+ *
+ * Neither the collection name nor its directory is configurable: Starlight
+ * hardcodes `<srcDir>/content/<collection>` in its own `getCollectionUrl()` and
+ * `getCollectionPathFromRoot()` helpers, and those are not reachable through
+ * its package exports, so the two forms below mirror them rather than import
+ * them.
+ *
+ * @see node_modules/@astrojs/starlight/utils/collection.ts
  */
+const COLLECTION = "docs";
+const COLLECTION_DIR = `content/${COLLECTION}`;
+
 const collectionPaths = ({ root, srcDir }: AstroConfig) => ({
   /** Absolute, for writing the staged files. */
-  url: new URL("content/docs/", srcDir),
+  url: new URL(`${COLLECTION_DIR}/`, srcDir),
   /**
    * Relative to the project root, for `entry.filePath`. Starlight builds its
    * own collection path the same way, and matches the two against each other.
    */
-  fromRoot: `${srcDir.pathname.replace(root.pathname, "")}content/docs`,
+  fromRoot: `${srcDir.pathname.replace(root.pathname, "")}${COLLECTION_DIR}`,
 });
 
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
