@@ -7,13 +7,22 @@
  *
  * Usage: node scripts/verify-docs.mjs [minimum]
  */
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { getPlatformProxy } from "wrangler";
 
 // `baseURL` is ".", so pages sit at the root of the bucket.
 const PREFIX = "";
 const minimum = Number(process.argv[2] ?? 200);
 
+// Anchored to the project rather than to `process.cwd()`, so the script checks
+// the same bucket wherever it is run from.
+const projectDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+
 const { env, dispose } = await getPlatformProxy({
+  configPath: path.join(projectDir, "wrangler.jsonc"),
+  persist: { path: path.join(projectDir, ".wrangler", "state", "v3") },
   environment: process.env.WRANGLER_ENV,
 });
 

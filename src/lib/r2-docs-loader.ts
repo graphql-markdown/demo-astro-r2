@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
+import type { AstroConfig } from "astro";
 import type { Loader } from "astro/loaders";
 import { getPlatformProxy } from "wrangler";
 
@@ -19,7 +21,15 @@ import { getPlatformProxy } from "wrangler";
  * The directory is a build artefact: gitignored, and rewritten from the bucket
  * on every load.
  */
-const COLLECTION_PATH = "src/content/docs";
+const collectionPaths = ({ root, srcDir }: AstroConfig) => ({
+  /** Absolute, for writing the staged files. */
+  url: new URL("content/docs/", srcDir),
+  /**
+   * Relative to the project root, for `entry.filePath`. Starlight builds its
+   * own collection path the same way, and matches the two against each other.
+   */
+  fromRoot: `${srcDir.pathname.replace(root.pathname, "")}content/docs`,
+});
 
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 
@@ -59,8 +69,24 @@ const parseFrontMatter = (
 export const r2DocsLoader = (): Loader => ({
   name: "r2-docs",
 
-  async load({ store, parseData, renderMarkdown, generateDigest, logger }) {
+  async load({
+    config,
+    store,
+    parseData,
+    renderMarkdown,
+    generateDigest,
+    logger,
+  }) {
+    const collection = collectionPaths(config);
     const { env, dispose } = await getPlatformProxy<Env>({
+      // Both anchored to the project root: `getPlatformProxy()` otherwise
+      // searches upwards from `process.cwd()` for the config and reads the
+      // local state from a `.wrangler` beside it, so a build started from
+      // elsewhere gets no `DOCS` binding, or an empty one.
+      configPath: fileURLToPath(new URL("wrangler.jsonc", config.root)),
+      persist: {
+        path: fileURLToPath(new URL(".wrangler/state/v3", config.root)),
+      },
       environment: process.env.WRANGLER_ENV,
     });
 
@@ -88,13 +114,13 @@ export const r2DocsLoader = (): Loader => ({
           const { attributes } = parseFrontMatter(raw);
           const id = key.replace(/\.mdx$/, "");
 
-          const cached = join(COLLECTION_PATH, key);
+          const cached = fileURLToPath(new URL(key, collection.url));
           await mkdir(dirname(cached), { recursive: true });
           await writeFile(cached, raw, "utf8");
 
           store.set({
             id,
-            filePath: cached,
+            filePath: `${collection.fromRoot}/${key}`,
             data: await parseData({
               id,
               data: { ...attributes, title: attributes.title ?? id },
@@ -114,7 +140,7 @@ export const r2DocsLoader = (): Loader => ({
       // text, so it needs no MDX compilation and no cached file.
       store.set({
         id: "404",
-        filePath: `${COLLECTION_PATH}/404.md`,
+        filePath: `${collection.fromRoot}/404.md`,
         data: await parseData({
           id: "404",
           data: {

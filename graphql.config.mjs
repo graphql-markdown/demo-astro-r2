@@ -1,12 +1,20 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { getPlatformProxy } from "wrangler";
 
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.mjs";
+
+// Paths are anchored to this file rather than left relative, so a run from
+// another working directory generates the same keys instead of quietly
+// rebasing them on `process.cwd()`.
+const configDir = path.dirname(fileURLToPath(import.meta.url));
 
 // Object keys are the generated paths relative to `rootPath`, so a page written
 // to `docs/types/objects/user.mdx` is stored as `types/objects/user.mdx` and
 // becomes the Starlight route `/types/objects/user`. Nothing is ever written to
 // `docs/` — the path only decides the key.
-const rootPath = "./docs";
+const rootPath = path.join(configDir, "docs");
 const baseURL = ".";
 
 // `getPlatformProxy` hands Node the same R2 binding the Worker gets. With no
@@ -14,6 +22,11 @@ const baseURL = ".";
 // WRANGLER_ENV=remote selects the wrangler.jsonc environment whose binding is
 // marked `"remote": true` and writes to the real bucket instead.
 const { env, dispose } = await getPlatformProxy({
+  // Anchored like the paths above: left to their defaults, the config file is
+  // looked up from `process.cwd()` and the local state read from a `.wrangler`
+  // beside it, so a run from elsewhere gets no `DOCS` binding, or an empty one.
+  configPath: path.join(configDir, "wrangler.jsonc"),
+  persist: { path: path.join(configDir, ".wrangler", "state", "v3") },
   environment: process.env.WRANGLER_ENV,
 });
 
@@ -30,7 +43,7 @@ export default {
       rootPath,
       baseURL,
       linkRoot: "/",
-      homepage: "./assets/index.mdx",
+      homepage: path.join(configDir, "assets", "index.mdx"),
       loaders: {
         UrlLoader: {
           module: "@graphql-tools/url-loader",
