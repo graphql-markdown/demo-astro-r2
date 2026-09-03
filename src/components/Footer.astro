@@ -1,0 +1,48 @@
+---
+/**
+ * Starlight's footer, with a GraphQL-Markdown credit in place of "Built with
+ * Starlight".
+ *
+ * Starlight's own credit is switched off in astro.config.mjs (`credits: false`)
+ * and this renders the replacement after the default footer, so the edit link,
+ * last-updated line and pagination stay entirely Starlight's.
+ */
+import Default from "@astrojs/starlight/components/Footer.astro";
+
+import darkMark from "../assets/graphql-markdown-dark.svg";
+import lightMark from "../assets/graphql-markdown.svg";
+---
+
+<Default />
+
+<a class="kudos sl-flex" href="https://graphql-markdown.dev/">
+  <img src={darkMark.src} class="light:sl-hidden" width="16" height="16" alt="" />
+  <img src={lightMark.src} class="dark:sl-hidden" width="16" height="16" alt="" />
+  Built with GraphQL-Markdown
+</a>
+
+<style>
+  /*
+   * Starlight centred its own credit as a flex item of the footer column. This
+   * one is a sibling of that footer, so it is a full-width flex container
+   * instead and `margin: auto` has nothing to distribute — centre its contents.
+   */
+  .kudos {
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    margin: 1.5rem auto;
+    font-size: var(--sl-text-xs);
+    text-decoration: none;
+    color: var(--sl-color-gray-3);
+  }
+
+  .kudos:hover {
+    color: var(--sl-color-white);
+  }
+
+  .kudos img {
+    width: 1.2em;
+    height: 1.2em;
+  }
+</style>

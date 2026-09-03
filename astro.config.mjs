@@ -15,11 +15,22 @@ export default defineConfig({
   integrations: [
     starlight({
       plugins: [catppuccin()],
-      credits: true,
+      // The credit is replaced in src/components/Footer.astro.
+      credits: false,
       pagination: false,
       // No `lastUpdated`: it reads git history for each page, and these pages
       // come from a bucket, not from this repository.
       title: "GraphQL-Markdown [R2 demo]",
+      favicon: "/favicon.svg",
+      // The project mark ships in two variants: its dark glyph disappears
+      // against the dark theme's background.
+      logo: {
+        light: "./src/assets/graphql-markdown.svg",
+        dark: "./src/assets/graphql-markdown-dark.svg",
+      },
+      components: {
+        Footer: "./src/components/Footer.astro",
+      },
       social: [
         {
           icon: "github",
