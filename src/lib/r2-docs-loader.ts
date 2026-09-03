@@ -44,6 +44,14 @@ const collectionPaths = ({ root, srcDir }: AstroConfig) => ({
   fromRoot: `${srcDir.pathname.replace(root.pathname, "")}${COLLECTION_DIR}`,
 });
 
+/**
+ * The entry Starlight's 404 route looks for. Hardcoded upstream as the injected
+ * route pattern, the entry id and the fallback title alike, and not exported.
+ *
+ * @see node_modules/@astrojs/starlight/utils/routing/data.ts
+ */
+const NOT_FOUND = "404";
+
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 
 const parseFrontMatter = (
@@ -144,12 +152,12 @@ export const r2DocsLoader = (): Loader => ({
       // supplies. Replacing the loader means supplying it here. It is plain
       // text, so it needs no MDX compilation and no cached file.
       store.set({
-        id: "404",
-        filePath: `${collection.fromRoot}/404.md`,
+        id: NOT_FOUND,
+        filePath: `${collection.fromRoot}/${NOT_FOUND}.md`,
         data: await parseData({
-          id: "404",
+          id: NOT_FOUND,
           data: {
-            title: "404",
+            title: NOT_FOUND,
             template: "splash",
             editUrl: false,
             pagefind: false,
