@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
+import { HOMEPAGE_FILE } from "../src/lib/docs-layout.ts";
 import { platformProxyOptions } from "../src/lib/platform-proxy.ts";
 
 // `baseURL` is ".", so pages sit at the root of the bucket.
@@ -37,7 +38,7 @@ do {
 
 await dispose();
 
-const index = keys.includes(`${PREFIX}index.mdx`);
+const homepageKey = `${PREFIX}${HOMEPAGE_FILE}`;
 
 console.log(`${keys.length} objects under "${PREFIX}"`);
 
@@ -46,8 +47,8 @@ if (keys.length < minimum) {
   process.exit(1);
 }
 
-if (!index) {
-  console.error(`Missing ${PREFIX}index.mdx — the homepage was not written.`);
+if (!keys.includes(homepageKey)) {
+  console.error(`Missing ${homepageKey} — the homepage was not written.`);
   process.exit(1);
 }
 

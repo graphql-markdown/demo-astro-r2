@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
+import { HOMEPAGE_FILE } from "./src/lib/docs-layout.ts";
 import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.ts";
 
@@ -41,7 +42,7 @@ export default {
       rootPath,
       baseURL,
       linkRoot: "/",
-      homepage: path.join(configDir, "assets", "index.mdx"),
+      homepage: path.join(configDir, "assets", HOMEPAGE_FILE),
       loaders: {
         UrlLoader: {
           module: "@graphql-tools/url-loader",

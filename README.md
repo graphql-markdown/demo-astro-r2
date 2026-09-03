@@ -30,6 +30,7 @@ the whole demo runs with no Cloudflare account.
 ├── src/
 │   ├── content.config.ts          # points Starlight's docs collection at R2
 │   ├── lib/
+│   │   ├── docs-layout.ts         # names shared by generation and verification
 │   │   ├── r2-output-adapter.ts   # ← the output adapter (generation)
 │   │   ├── r2-docs-loader.ts      # ← the content loader (build)
 │   │   └── formatter.ts           # the Starlight preset, with overrides
