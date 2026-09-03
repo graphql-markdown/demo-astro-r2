@@ -12,6 +12,11 @@ export default defineConfig({
     // Optimise images with sharp during the build, not at runtime.
     imageService: "compile",
   }),
+  // Every page is prerendered from the bucket and nothing here uses sessions.
+  // Left on, @astrojs/cloudflare wires up its default KV session driver on
+  // every build, which expects a `SESSION` KV binding wrangler.jsonc does not
+  // declare.
+  session: false,
   integrations: [
     starlight({
       plugins: [catppuccin()],
