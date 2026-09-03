@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
-import { platformProxyOptions } from "../src/lib/platform-proxy.mjs";
+import { platformProxyOptions } from "../src/lib/platform-proxy.ts";
 
 // `baseURL` is ".", so pages sit at the root of the bucket.
 const PREFIX = "";
@@ -53,5 +53,5 @@ if (!index) {
 
 console.log("Documentation looks complete.");
 
-// Same as generate-docs.mjs: the binding's child process can outlive dispose().
+// Same as generate-docs.ts: the binding's child process can outlive dispose().
 process.exit(0);

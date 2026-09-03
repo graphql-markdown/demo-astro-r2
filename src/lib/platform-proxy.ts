@@ -20,13 +20,13 @@ const CONFIG_FILE = "wrangler.jsonc";
 const STATE_DIR = path.join(".wrangler", "state", "v3");
 
 /**
- * @param {string | URL} projectDir - The project root, absolute. Astro hands it
- *   over as a URL (`config.root`); the scripts derive it from `import.meta.url`.
+ * @param projectDir - The project root, absolute. Astro hands it over as a URL
+ *   (`config.root`); the scripts derive it from `import.meta.url`.
  * @returns Options to spread into `getPlatformProxy()`. `WRANGLER_ENV=remote`
  *   selects the wrangler.jsonc environment whose `DOCS` binding is marked
  *   `"remote": true`; unset, everything runs against the local state.
  */
-export const platformProxyOptions = (projectDir) => {
+export const platformProxyOptions = (projectDir: string | URL) => {
   const root =
     projectDir instanceof URL ? fileURLToPath(projectDir) : projectDir;
 

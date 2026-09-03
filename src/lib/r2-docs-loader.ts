@@ -6,7 +6,7 @@ import type { AstroConfig } from "astro";
 import type { Loader } from "astro/loaders";
 import { getPlatformProxy } from "wrangler";
 
-import { platformProxyOptions } from "./platform-proxy.mjs";
+import { platformProxyOptions } from "./platform-proxy.ts";
 
 /**
  * Pages fetched from R2 are staged here so Astro's MDX pipeline can compile

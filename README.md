@@ -42,7 +42,7 @@ the whole demo runs with no Cloudflare account.
 ├── astro.config.ts
 ├── graphql.config.ts              # wires the adapter into GraphQL-Markdown
 ├── scripts/
-│   ├── generate-docs.mjs          # runs the generator, then releases the binding
+│   ├── generate-docs.ts           # runs the generator, then releases the binding
 │   └── verify-docs.mjs            # asserts the bucket actually holds the pages
 ├── package.json
 └── wrangler.jsonc                 # the DOCS R2 binding
@@ -64,7 +64,7 @@ Object keys are the paths the filesystem writer would have used, relative to
 `rootPath`: `docs/types/objects/user.mdx` becomes the key
 `types/objects/user.mdx`.
 
-`npm run doc` goes through `scripts/generate-docs.mjs` rather than calling
+`npm run doc` goes through `scripts/generate-docs.ts` rather than calling
 `gqlmd graphql-to-doc` directly. The two generate identical output, but the
 binding keeps a workerd process alive and nothing inside a config file can tell
 when generation has finished — so the script runs the generator and then

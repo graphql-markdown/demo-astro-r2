@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
-import { platformProxyOptions } from "./src/lib/platform-proxy.mjs";
+import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.mjs";
 
 // Paths are anchored to this file rather than left relative, so a run from
@@ -29,7 +29,7 @@ const { env, dispose } = await getPlatformProxy(
 );
 
 // Miniflare keeps a workerd process alive behind the binding, so generation has
-// to release it explicitly — `scripts/generate-docs.mjs` calls this when the
+// to release it explicitly — `scripts/generate-docs.ts` calls this when the
 // run finishes. Nothing here can hook "generation ended" on its own, which is
 // why `npm run doc` goes through that script rather than `gqlmd` directly.
 export { dispose };

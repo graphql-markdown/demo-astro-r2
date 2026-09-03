@@ -6,7 +6,7 @@
  * process alive, and nothing in a config file can tell when generation has
  * finished. This wrapper adds that one missing step.
  *
- * Usage: node scripts/generate-docs.mjs [--force]
+ * Usage: node scripts/generate-docs.ts [--force]
  */
 import { runGraphQLMarkdown } from "@graphql-markdown/cli";
 
