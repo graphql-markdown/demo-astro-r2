@@ -3,6 +3,8 @@ import cloudflare from "@astrojs/cloudflare";
 import starlight from "@astrojs/starlight";
 import catppuccin from "@catppuccin/starlight";
 
+import { SECTIONS } from "./src/lib/docs-layout.ts";
+
 // https://astro.build/config
 export default defineConfig({
   // No `base`: @astrojs/cloudflare pins the Worker's asset root to the base
@@ -44,16 +46,12 @@ export default defineConfig({
           href: "https://github.com/graphql-markdown/demo-astro-r2",
         },
       ],
-      sidebar: [
-        {
-          label: "Operations",
-          items: [{ autogenerate: { directory: "operations" } }],
-        },
-        {
-          label: "Types",
-          items: [{ autogenerate: { directory: "types" } }],
-        },
-      ],
+      // One group per generated top-level directory, so the sidebar cannot
+      // drift from what `npm run doc` writes to the bucket.
+      sidebar: Object.entries(SECTIONS).map(([directory, label]) => ({
+        label,
+        items: [{ autogenerate: { directory } }],
+      })),
     }),
   ],
 });

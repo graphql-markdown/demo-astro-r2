@@ -6,6 +6,7 @@ import type { AstroConfig } from "astro";
 import type { Loader } from "astro/loaders";
 import { getPlatformProxy } from "wrangler";
 
+import { COLLECTION, KEY_PREFIX, PAGE_EXTENSION } from "./docs-layout.ts";
 import { platformProxyOptions } from "./platform-proxy.ts";
 
 /**
@@ -23,15 +24,13 @@ import { platformProxyOptions } from "./platform-proxy.ts";
  * The directory is a build artefact: gitignored, and rewritten from the bucket
  * on every load.
  *
- * Neither the collection name nor its directory is configurable: Starlight
- * hardcodes `<srcDir>/content/<collection>` in its own `getCollectionUrl()` and
- * `getCollectionPathFromRoot()` helpers, and those are not reachable through
- * its package exports, so the two forms below mirror them rather than import
- * them.
+ * Starlight hardcodes `<srcDir>/content/<collection>` in its own
+ * `getCollectionUrl()` and `getCollectionPathFromRoot()` helpers, and those are
+ * not reachable through its package exports, so the two forms below mirror them
+ * rather than import them.
  *
  * @see node_modules/@astrojs/starlight/utils/collection.ts
  */
-const COLLECTION = "docs";
 const COLLECTION_DIR = `content/${COLLECTION}`;
 
 const collectionPaths = ({ root, srcDir }: AstroConfig) => ({
@@ -110,10 +109,14 @@ export const r2DocsLoader = (): Loader => ({
       let count = 0;
 
       do {
-        const listed = await env.DOCS.list({ cursor, limit: 1000 });
+        const listed = await env.DOCS.list({
+          prefix: KEY_PREFIX,
+          cursor,
+          limit: 1000,
+        });
 
         for (const { key } of listed.objects) {
-          if (!key.endsWith(".mdx")) {
+          if (!key.endsWith(PAGE_EXTENSION)) {
             continue;
           }
 
@@ -125,7 +128,7 @@ export const r2DocsLoader = (): Loader => ({
 
           const raw = await object.text();
           const { attributes } = parseFrontMatter(raw);
-          const id = key.replace(/\.mdx$/, "");
+          const id = key.slice(0, -PAGE_EXTENSION.length);
 
           const cached = fileURLToPath(new URL(key, collection.url));
           await mkdir(dirname(cached), { recursive: true });

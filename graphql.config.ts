@@ -3,7 +3,12 @@ import { fileURLToPath } from "node:url";
 
 import { getPlatformProxy } from "wrangler";
 
-import { HOMEPAGE_FILE } from "./src/lib/docs-layout.ts";
+import {
+  ASSETS_DIR,
+  BASE_URL,
+  HOMEPAGE_FILE,
+  ROOT_DIR,
+} from "./src/lib/docs-layout.ts";
 import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.ts";
 
@@ -14,10 +19,8 @@ const configDir = path.dirname(fileURLToPath(import.meta.url));
 
 // Object keys are the generated paths relative to `rootPath`, so a page written
 // to `docs/types/objects/user.mdx` is stored as `types/objects/user.mdx` and
-// becomes the Starlight route `/types/objects/user`. Nothing is ever written to
-// `docs/` — the path only decides the key.
-const rootPath = path.join(configDir, "docs");
-const baseURL = ".";
+// becomes the Starlight route `/types/objects/user`.
+const rootPath = path.join(configDir, ROOT_DIR);
 
 // `getPlatformProxy` hands Node the same R2 binding the Worker gets. With no
 // WRANGLER_ENV that is the local .wrangler state, so generation runs offline;
@@ -40,9 +43,9 @@ export default {
   extensions: {
     ["graphql-markdown"]: {
       rootPath,
-      baseURL,
+      baseURL: BASE_URL,
       linkRoot: "/",
-      homepage: path.join(configDir, "assets", HOMEPAGE_FILE),
+      homepage: path.join(configDir, ASSETS_DIR, HOMEPAGE_FILE),
       loaders: {
         UrlLoader: {
           module: "@graphql-tools/url-loader",
