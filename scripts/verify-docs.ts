@@ -5,7 +5,7 @@
  * with incomplete output. A pipeline that publishes documentation should check
  * what is in the destination instead of trusting the exit status.
  *
- * Usage: node scripts/verify-docs.mjs [minimum]
+ * Usage: node scripts/verify-docs.ts [minimum]
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,12 +22,12 @@ const minimum = Number(process.argv[2] ?? 200);
 // the same bucket wherever it is run from.
 const projectDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const { env, dispose } = await getPlatformProxy(
+const { env, dispose } = await getPlatformProxy<Env>(
   platformProxyOptions(projectDir),
 );
 
-const keys = [];
-let cursor;
+const keys: string[] = [];
+let cursor: string | undefined;
 
 do {
   const listed = await env.DOCS.list({ prefix: PREFIX, cursor, limit: 1000 });

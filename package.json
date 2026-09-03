@@ -16,9 +16,9 @@
     "doc": "node scripts/generate-docs.ts",
     "doc:force": "node scripts/generate-docs.ts --force",
     "gqlmd": "gqlmd",
-    "link:local": "node scripts/link-graphql-markdown.mjs",
+    "link:local": "node scripts/link-graphql-markdown.ts",
     "check": "wrangler types && astro check",
-    "doc:verify": "node scripts/verify-docs.mjs"
+    "doc:verify": "node scripts/verify-docs.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.0",

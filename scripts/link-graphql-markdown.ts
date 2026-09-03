@@ -11,7 +11,7 @@
 import { cp, rm, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
-const exists = async (path) =>
+const exists = async (path: string) =>
   await stat(path).then(
     () => true,
     () => false,

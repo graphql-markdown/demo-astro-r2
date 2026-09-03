@@ -43,7 +43,7 @@ the whole demo runs with no Cloudflare account.
 ├── graphql.config.ts              # wires the adapter into GraphQL-Markdown
 ├── scripts/
 │   ├── generate-docs.ts           # runs the generator, then releases the binding
-│   └── verify-docs.mjs            # asserts the bucket actually holds the pages
+│   └── verify-docs.ts             # asserts the bucket actually holds the pages
 ├── package.json
 └── wrangler.jsonc                 # the DOCS R2 binding
 ```
