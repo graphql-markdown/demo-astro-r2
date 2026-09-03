@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "demo-astro-r2",
+  "compatibility_date": "2026-08-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist/client"
+  },
+  // The generated documentation lives here rather than on disk: `npm run doc`
+  // writes to this bucket through the output adapter, and the Worker reads
+  // pages back out of it at request time.
+  //
+  // Locally this is Wrangler's R2 emulation, persisted under .wrangler/state,
+  // which is why generation and `wrangler dev` see the same bucket without a
+  // Cloudflare account.
+  "r2_buckets": [
+    {
+      "binding": "DOCS",
+      "bucket_name": "graphql-markdown-demo-docs"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "env": {
+    // Same binding against the real bucket. Generation targets it with
+    // WRANGLER_ENV=remote (see graphql.config.mjs), which is what CI uses;
+    // it needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+    "remote": {
+      "r2_buckets": [
+        {
+          "binding": "DOCS",
+          "bucket_name": "graphql-markdown-demo-docs",
+          "remote": true
+        }
+      ]
+    }
+  }
+}
