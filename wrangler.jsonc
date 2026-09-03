@@ -24,7 +24,7 @@
   },
   "env": {
     // Same binding against the real bucket. Generation targets it with
-    // WRANGLER_ENV=remote (see graphql.config.mjs), which is what CI uses;
+    // WRANGLER_ENV=remote (see graphql.config.ts), which is what CI uses;
     // it needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
     "remote": {
       "r2_buckets": [

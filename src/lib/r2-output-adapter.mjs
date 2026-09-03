@@ -15,7 +15,7 @@ import path from "node:path";
  *
  * @param bucket - An R2 binding (`R2Bucket`), local or remote.
  * @param rootPath - The `rootPath` setting, used to turn paths into keys. Pass
- *   it absolute, as `graphql.config.mjs` does, so the keys do not depend on the
+ *   it absolute, as `graphql.config.ts` does, so the keys do not depend on the
  *   working directory the generator was started from.
  * @returns An object with `writeFile`, `readFile` and `ensureDir`.
  */

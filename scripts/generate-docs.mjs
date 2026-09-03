@@ -2,7 +2,7 @@
  * Runs GraphQL-Markdown, then releases the R2 binding.
  *
  * `gqlmd graphql-to-doc` would generate the same documentation from the same
- * `graphql.config.mjs`, but the binding that config opens keeps a workerd
+ * `graphql.config.ts`, but the binding that config opens keeps a workerd
  * process alive, and nothing in a config file can tell when generation has
  * finished. This wrapper adds that one missing step.
  *
@@ -10,7 +10,7 @@
  */
 import { runGraphQLMarkdown } from "@graphql-markdown/cli";
 
-import { dispose } from "../graphql.config.mjs";
+import { dispose } from "../graphql.config.ts";
 
 const force = process.argv.includes("--force");
 

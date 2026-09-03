@@ -2,7 +2,7 @@
  * Shared `getPlatformProxy()` options, anchored to the project.
  *
  * Three entry points reach the `DOCS` binding from Node — the content loader,
- * `graphql.config.mjs` and `scripts/verify-docs.mjs` — and all three need the
+ * `graphql.config.ts` and `scripts/verify-docs.mjs` — and all three need the
  * same anchoring: left to their defaults, `getPlatformProxy()` searches upwards
  * from `process.cwd()` for the config file and reads the local state from a
  * `.wrangler` beside it, so a run started from elsewhere gets no `DOCS`

@@ -40,7 +40,7 @@ the whole demo runs with no Cloudflare account.
 │   └── styles/custom.css          # theme tweaks (Starlight `customCss`)
 ├── public/favicon.svg             # the project mark
 ├── astro.config.ts
-├── graphql.config.mjs             # wires the adapter into GraphQL-Markdown
+├── graphql.config.ts              # wires the adapter into GraphQL-Markdown
 ├── scripts/
 │   ├── generate-docs.mjs          # runs the generator, then releases the binding
 │   └── verify-docs.mjs            # asserts the bucket actually holds the pages
@@ -50,7 +50,7 @@ the whole demo runs with no Cloudflare account.
 
 ### How the pieces fit
 
-**Generation** (`npm run doc`) runs under Node. `graphql.config.mjs` gets the R2
+**Generation** (`npm run doc`) runs under Node. `graphql.config.ts` gets the R2
 binding through Wrangler's `getPlatformProxy()` and hands it to
 `r2OutputAdapter()`, which implements the three methods the renderer expects:
 
@@ -199,7 +199,7 @@ Steps 1 and 2 are one-offs. After that:
 `npm run doc` wrote to. Because the pages are prerendered, regenerating means
 rebuilding: restart `npm run dev`, or run `npm run build` again.
 
-> 🧑‍🚀 **Edit `graphql.config.mjs` to try with your own GraphQL schema.**
+> 🧑‍🚀 **Edit `graphql.config.ts` to try with your own GraphQL schema.**
 
 ### Troubleshooting
 
