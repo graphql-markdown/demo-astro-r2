@@ -28,6 +28,7 @@ export default defineConfig({
         light: "./src/assets/graphql-markdown.svg",
         dark: "./src/assets/graphql-markdown-dark.svg",
       },
+      customCss: ["./src/styles/custom.css"],
       components: {
         Footer: "./src/components/Footer.astro",
         PageTitle: "./src/components/PageTitle.astro",

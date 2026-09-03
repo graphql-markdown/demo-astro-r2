@@ -1,0 +1,42 @@
+/*
+ * Theme tweaks. Presentation that belongs to the site rather than to the
+ * generated content — anything about the markup itself is decided in
+ * src/lib/formatter.mjs instead.
+ */
+
+/*
+ * Every field, argument and enum value is an h4, and their nested entries are
+ * h5s, so a page is mostly small headings. Starlight sizes h4 at
+ * `--sl-text-xl` (`--sl-text-2xl` from 72rem up) and h5 at `--sl-text-lg`,
+ * which reads as a heading per line.
+ *
+ * Overriding the tokens rather than the rules keeps Starlight's heading spacing
+ * and anchor styling. Starlight declares its own tokens inside `@layer
+ * starlight`, and this file is unlayered, so these win at every breakpoint
+ * without needing extra specificity.
+ */
+:root {
+  --sl-text-h4: var(--sl-text-base);
+  --sl-text-h5: var(--sl-text-body);
+}
+
+/*
+ * astro-breadcrumbs ships unstyled apart from a few CSS variables, so give it
+ * Starlight's own colours and type scale.
+ */
+.c-breadcrumbs {
+  --color-link-breadcrumbs: var(--sl-color-gray-3);
+  --size-font-breadcrumbs: var(--sl-text-sm);
+}
+
+.c-breadcrumbs__crumbs {
+  column-gap: 0.4rem;
+}
+
+.c-breadcrumbs__link:hover {
+  color: var(--sl-color-white);
+}
+
+.c-breadcrumbs__crumb[aria-current="page"] {
+  color: var(--sl-color-gray-2);
+}
