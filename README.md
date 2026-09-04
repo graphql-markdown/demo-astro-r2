@@ -145,7 +145,6 @@ All commands are run from the root of the project, from a terminal:
 | Command             | Action                                                       |
 | :------------------ | :----------------------------------------------------------- |
 | `npm install`       | Installs dependencies                                        |
-| `npm run link:local`| Points GraphQL-Markdown at a local checkout (see below)       |
 | `npm run doc`       | Generates documentation from the schema into R2              |
 | `npm run doc:force` | Same, emptying the bucket first (`--force`)                  |
 | `npm run doc:verify`| Checks that the bucket actually holds a complete set of pages |
@@ -160,32 +159,18 @@ All commands are run from the root of the project, from a terminal:
 Everything runs offline against Wrangler's local R2 emulation — no Cloudflare
 account, no bucket, no credentials.
 
-One prerequisite: `outputAdapter` is on GraphQL-Markdown's `main` branch but has
-not been released to npm yet, so the generator comes from a local checkout of
-the monorepo.
-
 ```bash
-# 1. build graphql-markdown from a checkout next to this one
-cd ../graphql-markdown
-bun run build
-
-# 2. install this demo
-cd ../demo-astro-r2
+# 1. install this demo
 npm install
-npm run link:local   # copies that build over the npm-installed packages
 
-# 3. generate the documentation into the local bucket (.wrangler/state)
+# 2. generate the documentation into the local bucket (.wrangler/state)
 npm run doc
 
-# 4. serve it
+# 3. serve it
 npm run dev          # http://localhost:4321
 ```
 
-`npm run link:local` looks for `../graphql-markdown` then `../../graphql-markdown`;
-set `GRAPHQL_MARKDOWN_REPO` to point somewhere else. Delete the script and this
-step once `outputAdapter` ships to npm.
-
-Steps 1 and 2 are one-offs. After that:
+Step 1 is a one-off. After that:
 
 | To... | Run |
 | :--- | :--- |

@@ -32,19 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # TEMPORARY: see ci.yml. Remove once `outputAdapter` ships to npm.
-      - name: Checkout graphql-markdown
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: graphql-markdown/graphql-markdown
-          path: .graphql-markdown
-
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-
-      - name: Build graphql-markdown
-        run: bun install --frozen-lockfile && bun run build
-        working-directory: .graphql-markdown
-
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -53,11 +40,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Use the local graphql-markdown build
-        run: npm run link:local
-        env:
-          GRAPHQL_MARKDOWN_REPO: .graphql-markdown
 
       # `--force` clears the prefix before writing, so a run that dies halfway
       # leaves the bucket partial. The verification step below is what turns
