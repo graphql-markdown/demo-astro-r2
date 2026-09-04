@@ -19,6 +19,10 @@ jobs:
   check:
     name: Check
     uses: ./.github/workflows/ci.yml
+    # Caps the token the called workflow can ask for; its own job declares the
+    # same read-only scope.
+    permissions:
+      contents: read
 
   deploy:
     name: Build and deploy
