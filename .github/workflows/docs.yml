@@ -6,8 +6,15 @@ run-name: "Regenerate documentation by @${{ github.actor }}"
 # loader reads the bucket at build time: the pages are baked into the Worker's
 # output, so a regeneration only reaches the site through a deploy.
 #
-# CLOUDFLARE_R2_API_TOKEN should be scoped to write on this one bucket only —
-# a narrower token than the one the deploy step uses.
+# CLOUDFLARE_R2_API_TOKEN needs Workers R2 Storage: Edit *and* Workers Scripts:
+# Edit. Generation writes through a `remote: true` binding, which does not reach
+# R2 directly: getPlatformProxy() proxies it through a Workers edge-preview
+# session, so an R2-only token fails against
+# /accounts/<id>/workers/subdomain/edge-preview before touching the bucket.
+#
+# Its R2 scope can still be limited to this one bucket, but Workers Scripts:
+# Edit means it is not a lower-privilege token than the deploy one. See the
+# token table in the README.
 on:
   workflow_dispatch:
 

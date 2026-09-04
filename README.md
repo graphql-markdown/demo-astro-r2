@@ -1,5 +1,7 @@
 # GraphQL-Markdown + Cloudflare R2 demo
 
+**Live demo: <https://demo-astro-r2.edno.workers.dev/>**
+
 A demo of GraphQL-Markdown's [`outputAdapter`](https://graphql-markdown.dev/docs/settings#outputadapter)
 setting: generated documentation is written **straight into a Cloudflare R2
 bucket** instead of the local filesystem, and an
@@ -270,8 +272,26 @@ to `main` would otherwise build from it, succeed with pages missing, and
 publish that. Only the deploy job holds the group, so the checks in front of it
 do not keep `docs.yml` queued.
 
-`docs.yml` should use a Cloudflare token scoped to write on this one bucket,
-separately from the deployment token.
+### Token permissions
+
+Both tokens need **Workers Scripts: Edit**, which is less obvious than it
+sounds. Writing through a `remote: true` binding does not talk to R2 directly:
+`getPlatformProxy()` opens a Workers edge-preview session and proxies the
+binding through it, so the call that authenticates is
+`/accounts/<id>/workers/subdomain/edge-preview`, not an R2 endpoint. A token
+holding only **Workers R2 Storage** fails there with
+`RemoteSessionAuthenticationError` before it ever reaches the bucket.
+
+| Secret | Used by | Permissions |
+| :--- | :--- | :--- |
+| `CLOUDFLARE_API_TOKEN` | `deploy.yml` (verify, build, deploy) and the deploy step of `docs.yml` | Workers Scripts: Edit + Workers R2 Storage: Read |
+| `CLOUDFLARE_R2_API_TOKEN` | `docs.yml` (generate, verify, build) | Workers Scripts: Edit + Workers R2 Storage: Edit |
+| `CLOUDFLARE_ACCOUNT_ID` | both | not a credential — it appears in every dashboard URL |
+
+So the second token is only narrower in its R2 scope, which you can still limit
+to this one bucket. It is **not** a lower-privilege token overall: `Workers
+Scripts: Edit` lets it deploy Workers too. Keep the split if you want the
+bucket restriction, but do not rely on it as a privilege boundary.
 
 Because the loader reads R2 at build time, every workflow that builds needs read
 access to the bucket, and a regeneration only reaches the site once `docs.yml`
