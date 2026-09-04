@@ -10,20 +10,33 @@ on:
   push:
     branches: [main]
 
-# Shared with docs.yml: that workflow empties the bucket before rewriting it,
-# and this one builds from whatever the bucket holds, so the two must not
-# overlap. Nothing is cancelled — a cancelled docs run leaves the bucket
-# half-written, so runs queue instead.
-concurrency:
-  group: r2-bucket
-  cancel-in-progress: false
-
 jobs:
+  # The same checks pull requests run. A push to `main` used to start them and
+  # this deploy in parallel, so nothing stopped a commit that failed them from
+  # shipping: the deploy's own `npm run build` catches a broken build, but
+  # `astro build` only strips types, so type errors reached production while CI
+  # went red beside it. Gating on the job fixes the ordering.
+  check:
+    name: Check
+    uses: ./.github/workflows/ci.yml
+
   deploy:
     name: Build and deploy
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # Shared with docs.yml: that workflow empties the bucket before rewriting
+    # it, and this one builds from whatever the bucket holds, so the two must
+    # not overlap. Nothing is cancelled — a cancelled docs run leaves the
+    # bucket half-written, so runs queue instead.
+    #
+    # Held by this job rather than the whole workflow, so the `check` job above
+    # does not keep docs.yml waiting: it runs entirely against local emulation
+    # and never reads this bucket.
+    concurrency:
+      group: r2-bucket
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -36,11 +49,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # docs.yml verifies the bucket before it deploys, because `--force` clears
+      # the prefix before rewriting it and a run that dies in between leaves it
+      # partial. The concurrency group keeps the two workflows from overlapping,
+      # but it does nothing about a docs run that already failed: the bucket
+      # stays half-written, and this workflow would build from it, succeed with
+      # pages silently missing, and publish the result. Check here too.
+      - name: Verify the documentation in the bucket
+        run: npm run doc:verify
+        # Credentials sit on the steps that read the bucket rather than on the
+        # job, so they stay out of the environment of `npm ci`, which runs the
+        # lifecycle scripts of every dependency.
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Selects the wrangler.jsonc environment whose DOCS binding is
+          # remote, so this reads the real bucket rather than local state.
+          WRANGLER_ENV: remote
+
       - name: Build
         run: npm run build
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Selects the wrangler.jsonc environment whose DOCS binding is
+          # remote, so this reads the real bucket rather than local state.
           WRANGLER_ENV: remote
 
       - name: Deploy

@@ -243,9 +243,15 @@ Three workflows:
 
 | Workflow | Trigger | What it does |
 | :--- | :--- | :--- |
-| `ci.yml` | pull requests, pushes to `main` | Generates against Wrangler's **local** R2 emulation, verifies it, then type-checks and builds — no bucket, no account, no secrets |
-| `deploy.yml` | push to `main`, manual | Builds from whatever is in the bucket and deploys |
+| `ci.yml` | pull requests, and called by `deploy.yml` | Generates against Wrangler's **local** R2 emulation, verifies it, then type-checks and builds — no bucket, no account, no secrets |
+| `deploy.yml` | push to `main`, manual | Runs `ci.yml` as a gate, then verifies the bucket, builds from it and deploys |
 | `docs.yml` | manual | Regenerates into the real bucket with `WRANGLER_ENV=remote`, verifies, then builds and deploys |
+
+`deploy.yml` calls `ci.yml` rather than letting it trigger on the same push:
+run as two workflows they go in parallel, and nothing stops a commit that fails
+the checks from shipping — the deploy's own `npm run build` catches a broken
+build, but `astro build` only strips types, so `astro check` has to be a gate
+in front of it rather than a race beside it.
 
 Two things `docs.yml` has to be careful about:
 
@@ -256,6 +262,13 @@ Two things `docs.yml` has to be careful about:
   leaves the bucket partial. Verification turns that into a failed run rather
   than a quietly broken site; if that window is unacceptable, generate into a
   versioned prefix and swap only on success.
+
+`deploy.yml` verifies the bucket for the second of those reasons: the shared
+`r2-bucket` concurrency group keeps the two workflows from overlapping, but a
+docs run that has *already* failed leaves the bucket partial, and a later push
+to `main` would otherwise build from it, succeed with pages missing, and
+publish that. Only the deploy job holds the group, so the checks in front of it
+do not keep `docs.yml` queued.
 
 `docs.yml` should use a Cloudflare token scoped to write on this one bucket,
 separately from the deployment token.

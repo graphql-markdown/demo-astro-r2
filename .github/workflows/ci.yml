@@ -1,9 +1,11 @@
 name: CI
 
+# Pull requests run these checks directly. On `main` they run as the gate in
+# front of the deploy instead, called from deploy.yml, so a push runs them once
+# rather than racing a deploy that ignores the result.
 on:
   pull_request:
-  push:
-    branches: [main]
+  workflow_call:
 
 jobs:
   check:
