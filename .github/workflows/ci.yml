@@ -32,6 +32,8 @@ jobs:
       # the same bucket through the content loader.
       - name: Generate documentation into the local R2 emulation
         run: npm run doc:force
+        env:
+          GRAPHQL_MARKDOWN_TELEMETRY_DEBUG: "1"
 
       - name: Verify the generated documentation
         run: npm run doc:verify

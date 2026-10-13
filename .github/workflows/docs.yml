@@ -54,6 +54,8 @@ jobs:
       # tolerate the window at all, generate into a versioned prefix and swap.
       - name: Generate documentation
         run: npm run doc:force
+        env:
+          GRAPHQL_MARKDOWN_TELEMETRY_DEBUG: "1"
 
       # `gqlmd` exits 0 even when a formatter hook failed, so check what
       # actually landed in the bucket rather than trusting the exit status.
