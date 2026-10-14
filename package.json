@@ -20,17 +20,17 @@
     "doc:verify": "node scripts/verify-docs.ts"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.3.2",
-    "@astrojs/starlight": "^0.41.11",
+    "@astrojs/cloudflare": "^14.3.4",
+    "@astrojs/starlight": "^0.42.6",
     "@catppuccin/starlight": "^2.1.0",
     "@graphql-markdown/cli": "^1.2.0",
     "@graphql-markdown/core": "^1.25.0",
     "@graphql-markdown/diff": "^1.1.22",
     "@graphql-markdown/formatters": "^1.2.0",
-    "@graphql-tools/url-loader": "^9.1.10",
+    "@graphql-tools/url-loader": "^9.1.12",
     "astro": "^7.3.8",
     "astro-breadcrumbs": "^3.4.2",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
