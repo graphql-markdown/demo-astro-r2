@@ -18,6 +18,32 @@ export default defineConfig({
   // every build, which expects a `SESSION` KV binding wrangler.jsonc does not
   // declare.
   session: false,
+  // satteri's browser binding unconditionally imports its wasm32-wasi
+  // fallback, which npm never installs (its package.json pins cpu:
+  // ["wasm32"], an arch no real build machine reports), so the client
+  // bundle step fails to resolve it. Starlight only needs satteri's
+  // native binding at build time, so the browser fallback is dead code
+  // here and safe to leave unresolved.
+  //
+  // Astro's static build builds the client bundle as its own Vite
+  // environment and assembles its `build.rolldownOptions` as a literal
+  // object (astro/dist/core/build/vite-build-config.js) that doesn't
+  // inherit `external` from `vite.build` or `vite.environments.client`
+  // config, so a plain config override never reaches it. A resolveId
+  // hook runs independently of that config assembly, so mark the import
+  // external there instead.
+  vite: {
+    plugins: [
+      {
+        name: "externalize-satteri-wasm32-wasi",
+        resolveId(source) {
+          if (source === "@bruits/satteri-wasm32-wasi") {
+            return { id: source, external: true };
+          }
+        },
+      },
+    ],
+  },
   integrations: [
     starlight({
       plugins: [catppuccin()],
