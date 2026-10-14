@@ -18,6 +18,19 @@ export default defineConfig({
   // every build, which expects a `SESSION` KV binding wrangler.jsonc does not
   // declare.
   session: false,
+  // satteri's browser binding unconditionally imports its wasm32-wasi
+  // fallback, which npm never installs (its package.json pins cpu:
+  // ["wasm32"], an arch no real build machine reports), so the client
+  // bundle step fails to resolve it. Starlight only needs satteri's
+  // native binding at build time, so the browser fallback is dead code
+  // here and safe to leave unresolved.
+  vite: {
+    build: {
+      rolldownOptions: {
+        external: ["@bruits/satteri-wasm32-wasi"],
+      },
+    },
+  },
   integrations: [
     starlight({
       plugins: [catppuccin()],
