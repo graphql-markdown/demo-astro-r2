@@ -43,6 +43,9 @@
     "@graphql-markdown/logger": "1.1.3",
     "@graphql-markdown/graphql": "1.3.3",
     "@graphql-markdown/helpers": "1.2.3",
-    "@graphql-markdown/printer-legacy": "1.19.2"
+    "@graphql-markdown/printer-legacy": "1.19.2",
+    "@catppuccin/starlight": {
+      "@astrojs/starlight": "$@astrojs/starlight"
+    }
   }
 }
