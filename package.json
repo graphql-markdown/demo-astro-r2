@@ -28,14 +28,14 @@
     "@graphql-markdown/diff": "^1.1.22",
     "@graphql-markdown/formatters": "^1.2.0",
     "@graphql-tools/url-loader": "^9.1.12",
-    "astro": "^7.3.8",
+    "astro": "^7.4.0",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "typescript": "^5.9.3",
-    "wrangler": "^4.149.0"
+    "wrangler": "^4.151.1"
   },
   "overrides": {
     "@graphql-markdown/types": "1.17.0",
