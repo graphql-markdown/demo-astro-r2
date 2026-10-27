@@ -61,6 +61,8 @@ export default {
         typeBadges: true,
       },
       outputAdapter: r2OutputAdapter(env.DOCS, rootPath),
+      // Demo builds should not send anonymous usage telemetry.
+      telemetry: false,
     },
   },
 };
