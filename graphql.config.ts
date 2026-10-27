@@ -39,7 +39,10 @@ const { env, dispose } = await getPlatformProxy<Env>(
 export { dispose };
 
 export default {
-  schema: "https://graphql.anilist.co/",
+  // A local copy of the AniList schema, taken from graphql-markdown's e2e
+  // fixtures, so generation does not depend on https://graphql.anilist.co/
+  // being up.
+  schema: path.join(configDir, "schema", "anilist.graphql"),
   extensions: {
     ["graphql-markdown"]: {
       rootPath,
@@ -47,10 +50,7 @@ export default {
       linkRoot: "/",
       homepage: path.join(configDir, ASSETS_DIR, HOMEPAGE_FILE),
       loaders: {
-        UrlLoader: {
-          module: "@graphql-tools/url-loader",
-          options: { method: "POST" },
-        },
+        GraphQLFileLoader: "@graphql-tools/graphql-file-loader",
       },
       // The Starlight preset with one override; see src/lib/formatter.ts.
       formatter: new URL("./src/lib/formatter.ts", import.meta.url).href,
