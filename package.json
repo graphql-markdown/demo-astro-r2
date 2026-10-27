@@ -21,21 +21,21 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",
-    "@astrojs/starlight": "^0.42.6",
+    "@astrojs/starlight": "^0.42.7",
     "@catppuccin/starlight": "^2.1.0",
     "@graphql-markdown/cli": "^1.2.0",
     "@graphql-markdown/core": "^1.25.0",
     "@graphql-markdown/diff": "^1.1.22",
     "@graphql-markdown/formatters": "^1.2.0",
     "@graphql-tools/graphql-file-loader": "^8.1.24",
-    "astro": "^7.4.0",
+    "astro": "^7.4.2",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "typescript": "^5.9.3",
-    "wrangler": "^4.151.1"
+    "wrangler": "^4.152.0"
   },
   "overrides": {
     "@graphql-markdown/types": "1.17.0",
