@@ -20,14 +20,14 @@
     "doc:verify": "node scripts/verify-docs.ts"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.2",
-    "@astrojs/starlight": "^0.42.7",
+    "@astrojs/cloudflare": "^14.4.3",
+    "@astrojs/starlight": "^0.42.8",
     "@catppuccin/starlight": "^2.1.0",
-    "@graphql-markdown/cli": "^1.2.0",
-    "@graphql-markdown/core": "^1.25.0",
+    "@graphql-markdown/cli": "^1.2.1",
+    "@graphql-markdown/core": "^1.26.0",
     "@graphql-markdown/diff": "^1.1.22",
-    "@graphql-markdown/formatters": "^1.2.0",
-    "@graphql-tools/graphql-file-loader": "^9.0.6",
+    "@graphql-markdown/formatters": "^1.2.1",
+    "@graphql-tools/graphql-file-loader": "^9.1.1",
     "astro": "^7.4.2",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.5"
