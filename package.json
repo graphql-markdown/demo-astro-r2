@@ -20,8 +20,8 @@
     "doc:verify": "node scripts/verify-docs.ts"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.3",
-    "@astrojs/starlight": "^0.42.8",
+    "@astrojs/cloudflare": "^14.4.6",
+    "@astrojs/starlight": "^0.42.10",
     "@catppuccin/starlight": "^2.1.0",
     "@graphql-markdown/cli": "^1.2.1",
     "@graphql-markdown/core": "^1.26.0",
