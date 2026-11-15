@@ -1,7 +1,7 @@
 ---
 /**
- * Starlight's footer, with a GraphQL-Markdown credit in place of "Built with
- * Starlight".
+ * Starlight's footer, with a GraphQL-Markdown credit (and a link to star the
+ * project on GitHub) in place of "Built with Starlight".
  *
  * Starlight's own credit is switched off in astro.config.ts (`credits: false`)
  * and this renders the replacement after the default footer, so the edit link,
@@ -15,11 +15,15 @@ import lightMark from "../assets/graphql-markdown.svg";
 
 <Default />
 
-<a class="kudos sl-flex" href="https://graphql-markdown.dev/">
-  <img src={darkMark.src} class="light:sl-hidden" width="16" height="16" alt="" />
-  <img src={lightMark.src} class="dark:sl-hidden" width="16" height="16" alt="" />
-  Built with GraphQL-Markdown
-</a>
+<div class="kudos sl-flex">
+  <a class="sl-flex" href="https://graphql-markdown.dev/">
+    <img src={darkMark.src} class="light:sl-hidden" width="16" height="16" alt="" />
+    <img src={lightMark.src} class="dark:sl-hidden" width="16" height="16" alt="" />
+    Built with GraphQL-Markdown
+  </a>
+  <span aria-hidden="true">·</span>
+  <a href="https://github.com/graphql-markdown/graphql-markdown">⭐ Star on GitHub</a>
+</div>
 
 <style>
   /*
@@ -33,11 +37,17 @@ import lightMark from "../assets/graphql-markdown.svg";
     gap: 0.5em;
     margin: 1.5rem auto;
     font-size: var(--sl-text-xs);
-    text-decoration: none;
     color: var(--sl-color-gray-3);
   }
 
-  .kudos:hover {
+  .kudos a {
+    align-items: center;
+    gap: 0.5em;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .kudos a:hover {
     color: var(--sl-color-white);
   }
 
