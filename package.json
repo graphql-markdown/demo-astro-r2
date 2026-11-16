@@ -27,7 +27,7 @@
     "@graphql-markdown/core": "^1.26.1",
     "@graphql-markdown/diff": "^1.1.24",
     "@graphql-markdown/formatters": "^1.2.2",
-    "@graphql-tools/graphql-file-loader": "^9.1.1",
+    "@graphql-tools/url-loader": "^10.0.9",
     "astro": "^7.4.8",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.5"

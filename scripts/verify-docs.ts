@@ -15,7 +15,7 @@ import { getPlatformProxy } from "wrangler";
 import { HOMEPAGE_FILE, KEY_PREFIX } from "../src/lib/docs-layout.ts";
 import { platformProxyOptions } from "../src/lib/platform-proxy.ts";
 
-const minimum = Number(process.argv[2] ?? 200);
+const minimum = Number(process.argv[2] ?? 35);
 
 // Anchored to the project rather than to `process.cwd()`, so the script checks
 // the same bucket wherever it is run from.
