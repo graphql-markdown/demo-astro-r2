@@ -192,7 +192,7 @@ rebuilding: restart `npm run dev`, or run `npm run build` again.
 ### Troubleshooting
 
 **The build produces only a 404 page.** The bucket is empty — run
-`npm run doc` first. Check with `npm run doc:verify`, which should report 245
+`npm run doc` first. Check with `npm run doc:verify`, which should report 35
 objects.
 
 **The sidebar is empty.** The staged pages are not under `src/content/docs/`.
