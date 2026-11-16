@@ -56,3 +56,28 @@ import lightMark from "../assets/graphql-markdown.svg";
     height: 1.2em;
   }
 </style>
+
+<style is:global>
+  /*
+   * Keep the footer at the bottom of the viewport on short pages: stretch the
+   * main column to the screen height and let the content above the footer
+   * take the extra space.
+   */
+  .main-pane > main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--sl-nav-height) - var(--sl-mobile-toc-height));
+  }
+  .main-pane > main > .content-panel:last-child,
+  .main-pane > main > .content-panel:last-child > .sl-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .main-pane > main > .content-panel:last-child > .sl-container {
+    width: 100%;
+  }
+  .main-pane > main > .content-panel:last-child > .sl-container > :has(+ footer) {
+    flex-grow: 1;
+  }
+</style>
