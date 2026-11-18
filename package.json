@@ -17,7 +17,8 @@
     "doc:force": "node scripts/generate-docs.ts --force",
     "gqlmd": "gqlmd",
     "check": "wrangler types && astro check",
-    "doc:verify": "node scripts/verify-docs.ts"
+    "doc:verify": "node scripts/verify-docs.ts",
+    "test:visual": "playwright test"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.6",
@@ -33,7 +34,10 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
+    "@argos-ci/playwright": "^7.10.0",
     "@astrojs/check": "^0.9.12",
+    "@playwright/test": "^1.65.1",
+    "serve": "^14.2.8",
     "typescript": "^5.9.3",
     "wrangler": "^4.159.0"
   },

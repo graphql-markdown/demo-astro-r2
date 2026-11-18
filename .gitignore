@@ -30,3 +30,8 @@ worker-configuration.d.ts
 
 # staged copies of the R2 pages, for MDX compilation
 src/content/
+
+# visual tests
+test-results/
+playwright-report/
+blob-report/
