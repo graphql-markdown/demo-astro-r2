@@ -61,6 +61,16 @@ export default defineConfig({
         dark: "./src/assets/graphql-markdown-dark.svg",
       },
       customCss: ["./src/styles/custom.css"],
+      // GraphQL-Markdown emits field and argument names as self links
+      // (`href="#"`) because section header ids are disabled. Point each at
+      // the heading Starlight generated for it, so the name works as a
+      // permalink.
+      head: [
+        {
+          tag: "script",
+          content: `document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll(".sl-markdown-content :is(h3, h4, h5)[id] > a[href='#']").forEach((link) => { link.href = "#" + link.parentElement.id; }); });`,
+        },
+      ],
       components: {
         Footer: "./src/components/Footer.astro",
         PageTitle: "./src/components/PageTitle.astro",
