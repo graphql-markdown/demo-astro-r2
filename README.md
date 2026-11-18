@@ -23,12 +23,18 @@ Both ends run under Node: generation through Wrangler's
 the build through the same binding. Locally that is Wrangler's R2 emulation, so
 the whole demo runs with no Cloudflare account.
 
+## Visual tests
+
+`npm run doc:force && npm run build && npm run test:visual` screenshots the
+landing page and one page per GraphQL type kind (desktop and mobile) with
+Playwright; CI (`.github/workflows/visual.yml`) uploads them to Argos.
+
 ## 🚀 Project structure
 
 ```
 .
 ├── assets/
-│   └── index.mdx                  # homepage template → index.mdx
+│   └── index.mdx                  # landing page (splash template) → index.mdx
 ├── src/
 │   ├── content.config.ts          # points Starlight's docs collection at R2
 │   ├── lib/
@@ -47,6 +53,8 @@ the whole demo runs with no Cloudflare account.
 ├── scripts/
 │   ├── generate-docs.ts           # runs the generator, then releases the binding
 │   └── verify-docs.ts             # asserts the bucket actually holds the pages
+├── tests/visual/site.spec.ts      # Playwright + Argos screenshots
+├── playwright.config.ts           # serves dist/client on VISUAL_PORT (4173)
 ├── package.json
 └── wrangler.jsonc                 # the DOCS R2 binding
 ```
