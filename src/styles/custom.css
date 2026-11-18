@@ -43,14 +43,14 @@
 
 /*
  * Accent. Catppuccin's mauve reads as a blue-leaning purple, so the accent
- * tokens are retuned to the violet the other GraphQL-Markdown demos use. The
+ * tokens are retuned to Cloudflare orange. The
  * neutrals stay Catppuccin's. Same selectors as the theme's own, and this file
  * comes after it.
  */
 :root {
-  --sl-color-accent-low: #2e2257;
-  --sl-color-accent: #8b6cf0;
-  --sl-color-accent-high: #b9a4ff;
+  --sl-color-accent-low: #4a2a0a;
+  --sl-color-accent: #f6821f;
+  --sl-color-accent-high: #f6821f;
   --gqlmd-badge-bg: color-mix(in oklch, var(--sl-color-gray-3) 15%, transparent);
   --gqlmd-badge-text: var(--sl-color-gray-2);
   --gqlmd-badge-deprecated-bg: color-mix(in oklch, var(--sl-color-orange) 20%, transparent);
@@ -72,9 +72,9 @@
 }
 
 :root[data-theme="light"] {
-  --sl-color-accent-low: #ede9fe;
-  --sl-color-accent: #7c3aed;
-  --sl-color-accent-high: #6d28d9;
+  --sl-color-accent-low: #fdebd8;
+  --sl-color-accent: #ad520a;
+  --sl-color-accent-high: #ad520a;
   --gqlmd-landing-shadow: #e4e4e7;
   /* zinc neutrals, light */
   --sl-color-white: #18181b;
@@ -298,8 +298,8 @@ main:has(.gqlmd-landing) > .content-panel:first-child {
 .gqlmd-schema-preview-chip {
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  background: color-mix(in oklch, #d8b4fe 10%, transparent);
-  color: #d8b4fe;
+  background: color-mix(in oklch, var(--sl-color-accent) 20%, transparent);
+  color: #f6821f;
   font-family: var(--sl-font-mono);
   font-size: 0.75rem;
 }
