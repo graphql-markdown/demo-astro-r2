@@ -52,7 +52,7 @@ export default defineConfig({
       pagination: false,
       // No `lastUpdated`: it reads git history for each page, and these pages
       // come from a bucket, not from this repository.
-      title: "GraphQL-Markdown [R2 demo]",
+      title: "GraphQL-Markdown",
       favicon: "/favicon.svg",
       // The project mark ships in two variants: its dark glyph disappears
       // against the dark theme's background.
