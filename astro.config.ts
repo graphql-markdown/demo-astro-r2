@@ -3,7 +3,7 @@ import cloudflare from "@astrojs/cloudflare";
 import starlight from "@astrojs/starlight";
 import catppuccin from "@catppuccin/starlight";
 
-import { SECTIONS } from "./src/lib/docs-layout.ts";
+import { SECTIONS, SUBSECTIONS } from "./src/lib/docs-layout.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -52,7 +52,7 @@ export default defineConfig({
       pagination: false,
       // No `lastUpdated`: it reads git history for each page, and these pages
       // come from a bucket, not from this repository.
-      title: "GraphQL-Markdown [R2 demo]",
+      title: "GraphQL-Markdown",
       favicon: "/favicon.svg",
       // The project mark ships in two variants: its dark glyph disappears
       // against the dark theme's background.
@@ -86,7 +86,12 @@ export default defineConfig({
       // drift from what `npm run doc` writes to the bucket.
       sidebar: Object.entries(SECTIONS).map(([directory, label]) => ({
         label,
-        items: [{ autogenerate: { directory } }],
+        items: Object.entries(SUBSECTIONS[directory] ?? {}).map(
+          ([subdirectory, subLabel]) => ({
+            label: subLabel,
+            items: [{ autogenerate: { directory: `${directory}/${subdirectory}` } }],
+          }),
+        ),
       })),
     }),
   ],
