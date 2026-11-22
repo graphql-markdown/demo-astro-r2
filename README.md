@@ -89,8 +89,8 @@ the keys minus `.mdx`, so `types/objects/user.mdx` becomes the route
 pages point at.
 
 This is a **build-time** read. Starlight prerenders every page, so regenerating
-the documentation reaches the site through a rebuild and deploy — the `docs.yml`
-workflow does both.
+the documentation reaches the site through a rebuild and deploy — the `deploy.yml`
+workflow does all three on every merge to `main`.
 
 **MDX.** The demo uses the Starlight formatter, so pages arrive as MDX
 importing `<Badge>` and `<Aside>` from `@astrojs/starlight/components`. MDX needs
@@ -249,13 +249,15 @@ WRANGLER_ENV=remote npm run deploy
 
 ## 🤖 CI/CD
 
-Three workflows:
+Two workflows:
 
 | Workflow | Trigger | What it does |
 | :--- | :--- | :--- |
 | `ci.yml` | pull requests, and called by `deploy.yml` | Generates against Wrangler's **local** R2 emulation, verifies it, then type-checks and builds — no bucket, no account, no secrets |
-| `deploy.yml` | push to `main`, manual | Runs `ci.yml` as a gate, then verifies the bucket, builds from it and deploys |
-| `docs.yml` | manual | Regenerates into the real bucket with `WRANGLER_ENV=remote`, verifies, then builds and deploys |
+| `deploy.yml` | push to `main`, manual | Runs `ci.yml` as a gate, then regenerates into the real bucket with `WRANGLER_ENV=remote`, verifies it, builds from it and deploys |
+
+Run `deploy.yml` manually to pick up a change to the shared demo schema, which
+is served from the graphql-markdown repository, without a commit here.
 
 `deploy.yml` calls `ci.yml` rather than letting it trigger on the same push:
 run as two workflows they go in parallel, and nothing stops a commit that fails
@@ -263,7 +265,7 @@ the checks from shipping — the deploy's own `npm run build` catches a broken
 build, but `astro build` only strips types, so `astro check` has to be a gate
 in front of it rather than a race beside it.
 
-Two things `docs.yml` has to be careful about:
+Two things the regeneration in `deploy.yml` has to be careful about:
 
 - **`gqlmd` exits 0 even when a formatter hook failed**, so the run checks what
   actually landed in the bucket rather than trusting the exit status. That is
@@ -273,12 +275,11 @@ Two things `docs.yml` has to be careful about:
   than a quietly broken site; if that window is unacceptable, generate into a
   versioned prefix and swap only on success.
 
-`deploy.yml` verifies the bucket for the second of those reasons: the shared
-`r2-bucket` concurrency group keeps the two workflows from overlapping, but a
-docs run that has *already* failed leaves the bucket partial, and a later push
-to `main` would otherwise build from it, succeed with pages missing, and
-publish that. Only the deploy job holds the group, so the checks in front of it
-do not keep `docs.yml` queued.
+The deploy job holds an `r2-bucket` concurrency group, so two runs never
+overlap: one cannot build from the bucket while another has it half-written.
+Runs queue rather than cancel, because a cancelled run would leave the bucket
+partial. Only the deploy job holds the group, so the `ci.yml` checks in front of
+it, which never touch the bucket, do not keep a queued run waiting.
 
 ### Token permissions
 
@@ -292,9 +293,9 @@ holding only **Workers R2 Storage** fails there with
 
 | Secret | Used by | Permissions |
 | :--- | :--- | :--- |
-| `CLOUDFLARE_API_TOKEN` | `deploy.yml` (verify, build, deploy) and the deploy step of `docs.yml` | Workers Scripts: Edit + Workers R2 Storage: Read |
-| `CLOUDFLARE_R2_API_TOKEN` | `docs.yml` (generate, verify, build) | Workers Scripts: Edit + Workers R2 Storage: Edit |
-| `CLOUDFLARE_ACCOUNT_ID` | both | not a credential — it appears in every dashboard URL |
+| `CLOUDFLARE_API_TOKEN` | `deploy.yml` (deploy step) | Workers Scripts: Edit + Workers R2 Storage: Read |
+| `CLOUDFLARE_R2_API_TOKEN` | `deploy.yml` (generate, verify, build) | Workers Scripts: Edit + Workers R2 Storage: Edit |
+| `CLOUDFLARE_ACCOUNT_ID` | `deploy.yml` | not a credential — it appears in every dashboard URL |
 
 So the second token is only narrower in its R2 scope, which you can still limit
 to this one bucket. It is **not** a lower-privilege token overall: `Workers
@@ -302,8 +303,8 @@ Scripts: Edit` lets it deploy Workers too. Keep the split if you want the
 bucket restriction, but do not rely on it as a privilege boundary.
 
 Because the loader reads R2 at build time, every workflow that builds needs read
-access to the bucket, and a regeneration only reaches the site once `docs.yml`
-has redeployed.
+access to the bucket, and a regeneration only reaches the site once `deploy.yml`
+has rebuilt and redeployed.
 
 ## 👀 Want to learn more?
 
