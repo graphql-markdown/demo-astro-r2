@@ -1,10 +1,14 @@
 name: Deploy
 
-run-name: "Deploy to Cloudflare Workers by @${{ github.actor }}"
+run-name: "Regenerate the documentation and deploy by @${{ github.actor }}"
 
-# Publishes the Worker from whatever is currently in the bucket. The build
-# reads R2 through the content loader, so this needs read access to it.
-# To regenerate the documentation first, use docs.yml instead.
+# Regenerates the documentation into R2, then builds and deploys the Worker.
+# The content loader reads the bucket at build time, so the pages are baked
+# into the Worker's output: a regeneration only reaches the site through a
+# build and deploy, which is why both happen in this one job.
+#
+# Runs on every merge to `main`, and manually to pick up a change to the shared
+# demo schema (served from the graphql-markdown repository) without a commit.
 on:
   workflow_dispatch:
   push:
@@ -30,14 +34,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    # Shared with docs.yml: that workflow empties the bucket before rewriting
-    # it, and this one builds from whatever the bucket holds, so the two must
-    # not overlap. Nothing is cancelled — a cancelled docs run leaves the
-    # bucket half-written, so runs queue instead.
+    # Generation empties the bucket before rewriting it, and the build reads
+    # whatever the bucket holds, so two runs must not overlap. Nothing is
+    # cancelled: a cancelled run leaves the bucket half-written, so runs queue
+    # instead.
     #
     # Held by this job rather than the whole workflow, so the `check` job above
-    # does not keep docs.yml waiting: it runs entirely against local emulation
-    # and never reads this bucket.
+    # does not hold the group: it runs entirely against local emulation and
+    # never reads this bucket.
     concurrency:
       group: r2-bucket
       cancel-in-progress: false
@@ -53,31 +57,45 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # docs.yml verifies the bucket before it deploys, because `--force` clears
-      # the prefix before rewriting it and a run that dies in between leaves it
-      # partial. The concurrency group keeps the two workflows from overlapping,
-      # but it does nothing about a docs run that already failed: the bucket
-      # stays half-written, and this workflow would build from it, succeed with
-      # pages silently missing, and publish the result. Check here too.
-      - name: Verify the documentation in the bucket
-        run: npm run doc:verify
-        # Credentials sit on the steps that read the bucket rather than on the
+      # `--force` clears the prefix before writing, so a run that dies halfway
+      # leaves the bucket partial. The verification step below is what turns
+      # that into a failed run rather than a quietly broken site; if you cannot
+      # tolerate the window at all, generate into a versioned prefix and swap.
+      #
+      # CLOUDFLARE_R2_API_TOKEN needs Workers R2 Storage: Edit *and* Workers
+      # Scripts: Edit: generation writes through a `remote: true` binding, which
+      # getPlatformProxy() proxies through a Workers edge-preview session, so an
+      # R2-only token fails before touching the bucket. See the README.
+      - name: Generate the documentation into the bucket
+        run: npm run doc:force
+        # Credentials sit on the steps that use the bucket rather than on the
         # job, so they stay out of the environment of `npm ci`, which runs the
         # lifecycle scripts of every dependency.
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # Selects the wrangler.jsonc environment whose DOCS binding is
-          # remote, so this reads the real bucket rather than local state.
+          # remote, so generation writes to the real bucket rather than local
+          # state.
+          WRANGLER_ENV: remote
+          # Prints the telemetry payload instead of sending it.
+          GRAPHQL_MARKDOWN_TELEMETRY_DEBUG: "1"
+
+      # `gqlmd` exits 0 even when a formatter hook failed, so check what
+      # actually landed in the bucket rather than trusting the exit status.
+      - name: Verify the documentation in the bucket
+        run: npm run doc:verify
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_ENV: remote
 
+      # Reads the bucket through the content loader in src/content.config.ts.
       - name: Build
         run: npm run build
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Selects the wrangler.jsonc environment whose DOCS binding is
-          # remote, so this reads the real bucket rather than local state.
           WRANGLER_ENV: remote
 
       - name: Deploy
