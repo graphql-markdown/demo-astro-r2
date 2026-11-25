@@ -23,6 +23,22 @@ Both ends run under Node: generation through Wrangler's
 the build through the same binding. Locally that is Wrangler's R2 emulation, so
 the whole demo runs with no Cloudflare account.
 
+## Markdown copies and deprecation links
+
+Each page ends with a **View as Markdown** link to a plain Markdown copy, for
+readers and tools that do not render MDX. `npm run doc` generates the pages into
+R2, then runs `scripts/generate-copies.ts`, which writes the copies to the
+`.markdown-copies` folder from the `markdown` project of `graphql.config.ts`
+(`lib/markdown-copy.mjs` formatter, no output adapter). `npm run build` copies
+them into `dist/client` after `astro build`, so `/types/objects/project.md` is
+served next to `/types/objects/project`. The link is added by the formatter in
+`src/lib/formatter.ts`, which reads and writes the page through the output
+adapter.
+
+The same formatter links type names written as inline code in deprecation
+reasons (for example `ProjectStatus` on `Project.state`) to their pages, as in
+the [hooks recipe](https://graphql-markdown.dev/docs/customize/hooks#link-entities-in-deprecation-reasons).
+
 ## Visual tests
 
 `npm run doc:force && npm run build && npm run test:visual` screenshots the
