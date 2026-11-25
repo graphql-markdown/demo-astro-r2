@@ -35,3 +35,4 @@ src/content/
 test-results/
 playwright-report/
 blob-report/
+.markdown-copies/
