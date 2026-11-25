@@ -9,6 +9,7 @@ import {
   HOMEPAGE_FILE,
   ROOT_DIR,
 } from "./src/lib/docs-layout.ts";
+import { decorators } from "./src/lib/decorators.ts";
 import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.ts";
 
@@ -38,31 +39,69 @@ const { env, dispose } = await getPlatformProxy<Env>(
 // why `npm run doc` goes through that script rather than `gqlmd` directly.
 export { dispose };
 
+// The schema shared by all GraphQL-Markdown demos, served from the main
+// repository.
+const schema =
+  "https://raw.githubusercontent.com/graphql-markdown/graphql-markdown/main/tests/e2e/__data__/demo_schema.graphql";
+
+// Content settings shared by the pages and their Markdown copies.
+const loaders = {
+  UrlLoader: "@graphql-tools/url-loader",
+};
+const printTypeOptions = {
+  typeBadges: true,
+};
+
+// Formatter paths must be absolute: a relative path is not resolved from the
+// project folder.
+const local = (file: string) => new URL(file, import.meta.url).href;
+
 export default {
-  // The schema shared by all GraphQL-Markdown demos, served from the main
-  // repository.
-  schema:
-    "https://raw.githubusercontent.com/graphql-markdown/graphql-markdown/main/tests/e2e/__data__/demo_schema.graphql",
-  extensions: {
-    ["graphql-markdown"]: {
-      rootPath,
-      baseURL: BASE_URL,
-      linkRoot: "/",
-      homepage: path.join(configDir, ASSETS_DIR, HOMEPAGE_FILE),
-      loaders: {
-        UrlLoader: "@graphql-tools/url-loader",
+  projects: {
+    default: {
+      schema,
+      extensions: {
+        ["graphql-markdown"]: {
+          rootPath,
+          baseURL: BASE_URL,
+          linkRoot: "/",
+          homepage: path.join(configDir, ASSETS_DIR, HOMEPAGE_FILE),
+          loaders,
+          decorators,
+          // The Starlight preset with overrides and the deprecation and
+          // Markdown copy links; see src/lib/formatter.ts.
+          formatter: local("./src/lib/formatter.ts"),
+          docOptions: {
+            sectionHeaderId: false,
+          },
+          printTypeOptions,
+          outputAdapter: r2OutputAdapter(env.DOCS, rootPath),
+          // Demo builds should not send anonymous usage telemetry.
+          telemetry: false,
+        },
       },
-      // The Starlight preset with one override; see src/lib/formatter.ts.
-      formatter: new URL("./src/lib/formatter.ts", import.meta.url).href,
-      docOptions: {
-        sectionHeaderId: false,
+    },
+    // Plain Markdown copies, written to disk (no adapter) and published next to
+    // each page by `npm run build`; see scripts/generate-copies.ts.
+    markdown: {
+      schema,
+      extensions: {
+        ["graphql-markdown"]: {
+          rootPath: path.join(configDir, ".markdown-copies"),
+          // Same as the pages, so a copy has the path of its page
+          baseURL: BASE_URL,
+          loaders,
+          decorators,
+          printTypeOptions,
+          formatter: local("./lib/markdown-copy.mjs"),
+          // The homepage is a page of the site, not a schema entity
+          homepage: false,
+          // No `{#id}` heading IDs, which plain Markdown does not support
+          docOptions: { sectionHeaderId: false },
+          telemetry: false,
+          force: true,
+        },
       },
-      printTypeOptions: {
-        typeBadges: true,
-      },
-      outputAdapter: r2OutputAdapter(env.DOCS, rootPath),
-      // Demo builds should not send anonymous usage telemetry.
-      telemetry: false,
     },
   },
 };
