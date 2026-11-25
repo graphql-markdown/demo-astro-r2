@@ -9,6 +9,7 @@ import {
   HOMEPAGE_FILE,
   ROOT_DIR,
 } from "./src/lib/docs-layout.ts";
+import { decorators } from "./src/lib/decorators.ts";
 import { platformProxyOptions } from "./src/lib/platform-proxy.ts";
 import { r2OutputAdapter } from "./src/lib/r2-output-adapter.ts";
 
@@ -66,6 +67,7 @@ export default {
           linkRoot: "/",
           homepage: path.join(configDir, ASSETS_DIR, HOMEPAGE_FILE),
           loaders,
+          decorators,
           // The Starlight preset with overrides and the deprecation and
           // Markdown copy links; see src/lib/formatter.ts.
           formatter: local("./src/lib/formatter.ts"),
@@ -89,6 +91,7 @@ export default {
           // Same as the pages, so a copy has the path of its page
           baseURL: BASE_URL,
           loaders,
+          decorators,
           printTypeOptions,
           formatter: local("./lib/markdown-copy.mjs"),
           // The homepage is a page of the site, not a schema entity

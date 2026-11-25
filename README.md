@@ -38,6 +38,8 @@ adapter.
 The same formatter links type names written as inline code in deprecation
 reasons (for example `ProjectStatus` on `Project.state`) to their pages, as in
 the [hooks recipe](https://graphql-markdown.dev/docs/customize/hooks#link-entities-in-deprecation-reasons).
+`src/lib/decorators.ts` adds a "deprecated" badge and a "Deprecated" notice for the
+schema's type-level `@deprecatedType` directive, in both outputs.
 
 ## Visual tests
 

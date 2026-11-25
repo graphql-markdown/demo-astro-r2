@@ -64,6 +64,19 @@ test("deprecation reason links to a type page", async ({ page }) => {
   await expect(link).toHaveAttribute("href", /\/types\/enums\/project-status\/?$/);
 });
 
+// A type-level `@deprecatedType` renders a "Deprecated" notice.
+test("deprecated type notice links to its replacement", async ({ page }) => {
+  await page.goto("/types/objects/legacy-project/");
+  const notice = page
+    .locator("aside, blockquote, .starlight-aside", { hasText: "Replaced by" })
+    .first();
+  await expect(notice).toContainText("Deprecated");
+  await expect(notice.locator("a", { hasText: /^Project$/ })).toHaveAttribute(
+    "href",
+    /\/types\/objects\/project\/?$/,
+  );
+});
+
 test.describe("dark mode", () => {
   test.use({ colorScheme: "dark" });
 
