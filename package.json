@@ -31,7 +31,7 @@
     "@graphql-markdown/graphql": "^1.4.0",
     "@graphql-markdown/printer-legacy": "^1.21.0",
     "@graphql-tools/url-loader": "^10.0.9",
-    "astro": "^7.4.12",
+    "astro": "^7.4.13",
     "astro-breadcrumbs": "^3.4.2",
     "sharp": "^0.35.5"
   },
@@ -41,7 +41,7 @@
     "@playwright/test": "^1.65.1",
     "serve": "^14.2.8",
     "typescript": "^5.9.3",
-    "wrangler": "^4.162.0"
+    "wrangler": "^4.166.0"
   },
   "overrides": {
     "@graphql-markdown/types": "1.19.0",
